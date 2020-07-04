@@ -1,38 +1,18 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const graphQlHttp = require('express-graphql');
-const { buildSchema } = require('graphql');
+const { GraphQLServer } = require('graphql-yoga')
+const resolvers = require('./graphql/resolvers');
 
-const app = express();
+const typeDefs = `
+  type RootQuery{
+    events: [String!]!
+  }
+  type RootMutation{
+    createEvent(name: String): String
+  }
+  `
 
-app.use(bodyParser.json());
 
-app.use('/graphql', graphQlHttp({
-  schema: buildSchema(`
-    type RootQuery{
-      events: [String!]!
-    }
-    type RootMutation{
-      createEvent(name: String): String
-    }
-    schema {
-      query: RootQuery
-      mutation: RootMutation
-    }
-    type Query {
-      events: String
-    }
-  `),
-  rootValue: {
-    events: () => {
-      return [`Romantic Cooking`, 'Sailing', 'All-Night Coding'];
-    },
-    createEvent: (args) => {
-      const eventName = args.name;
-      return eventName;
-    }
-  },
-  graphiql: true
-}));
-
-app.listen(3000);
+const server = new GraphQLServer(
+  { typeDefs : "graphql/schema.graphql",
+  resolvers
+  });
+server.start(() => console.log('Server is running on localhost:4000'))
