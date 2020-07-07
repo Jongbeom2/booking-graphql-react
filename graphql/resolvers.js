@@ -2,19 +2,81 @@ const Event = require('../models/event');
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
 
+const user = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    console.log(user);
+    return { ...user._doc, _id: user.id, createdEvents: event(user._doc.createdEvents) }
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+const event = async (eventIds) => {
+  try {
+    const events = await Event.find({ _id: { $in: eventIds } })
+    return events.map(event => ({ ...event._doc, _id: event.id, creator: user(event._doc.creator) }));
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 const resolvers = {
-  Query: {
-    events: async () => {
+  Query: { 
+    getEvent: async (_,args) => {
       try {
-        // Get event
-        const result = await Event.find();
-        // Modify _id and return events
-        return result.map(event => ({ ...event._doc, _id: event.id }));
+        // Get event and return event
+        const event = await Event.findById(args._id);
+        return { ...event._doc, _id: event.id};
       } catch (err) {
         console.log(err);
         throw err;
       }
     },
+  },
+  User:{
+    _id(_,args){
+      return _._id;
+    },
+    email(_,args){
+      return _.email;
+    },
+    async createdEvents(_,args){
+      try {
+        const events = await Event.find({ _id: { $in: _.createdEvents } })
+        return events.map(event => ({ ...event._doc, _id: event.id}));
+      } catch (err) {
+        console.log(err);
+        throw err;
+      }
+    }
+  },
+  Event:{
+    _id(_,args){
+      return _._id;
+    },
+    title(_,args){
+      return _.title;
+    },
+    description(_,args){
+      return _.description;
+    },
+    price(_,args){
+      return _.price;
+    },
+    date(_,args){
+      return _.date;
+    },
+    async creator(_,args){
+      try{
+        const user = await User.findById(_.creator);
+        return { ...user._doc, _id: user.id}
+      }catch(err){
+        console.log(err);
+        throw err;
+      }
+    }
   },
   Mutation: {
     createEvent: async (_, args) => {
@@ -31,7 +93,7 @@ const resolvers = {
         const result = await event.save();
         // Save event in user
         const user = await User.findById('5f02fc658bfefb48785c2125');
-        if (!user){
+        if (!user) {
           throw new Error('User not exists.');
         }
         user.createdEvents.push(result);
@@ -47,8 +109,8 @@ const resolvers = {
     createUser: async (_, args) => {
       try {
         // Check email
-        const exUser = await User.findOne({email:args.userInput.email});
-        if(exUser){
+        const exUser = await User.findOne({ email: args.userInput.email });
+        if (exUser) {
           throw new Error('User exists already.');
         }
         // Create hashed password
@@ -61,7 +123,7 @@ const resolvers = {
         const result = await user.save();
         // Return created user
         console.log(result._doc);
-        return { ...result._doc, password:null}; 
+        return { ...result._doc, password: null };
       } catch (err) {
         console.log(err);
         throw err;
