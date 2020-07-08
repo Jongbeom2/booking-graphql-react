@@ -46,7 +46,10 @@ const bookingResolvers = {
     }
   },
   Mutation: {
-    bookEvent: async (_, args) => {
+    bookEvent: async (_, args,ctx) => {
+      if(!ctx.isAuth){
+        throw new Error('Unauthenticatd!');
+      }
       try {
         // Save Booking
         const booking = new Booking({
@@ -61,7 +64,10 @@ const bookingResolvers = {
         throw err;
       }
     },
-    cancelBooking: async (_, args) => {
+    cancelBooking: async (_, args,ctx) => {
+      if(!ctx.isAuth){
+        throw new Error('Unauthenticatd!');
+      }
       try {
         // Get Booking and event
         const booking = await Booking.findById(args.bookingId).populate('event');

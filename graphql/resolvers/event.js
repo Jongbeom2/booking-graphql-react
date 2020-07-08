@@ -50,7 +50,10 @@ const eventRsolvers = {
     }
   },
   Mutation: {
-    createEvent: async (_, args) => {
+    createEvent: async (_, args,ctx) => {
+      if(!ctx.isAuth){
+        throw new Error('Unauthenticatd!');
+      }
       try {
         const input = args.eventInput;
         // Save event
