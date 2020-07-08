@@ -6,7 +6,7 @@ const dbConnect = require('./models');
 dbConnect();
 
 const server = new GraphQLServer({
-  typeDefs: "graphql/schema.graphql",
+  typeDefs: "./graphql/schema/schema.graphql",
   resolvers
 });
 
