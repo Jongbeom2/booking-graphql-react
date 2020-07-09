@@ -31,13 +31,17 @@ function SignUpPage() {
   const handleChangePassword2 = (e) => {
     setPassword2(e.target.value);
   }
-  const handleClickSignUp = async (e) => {
+  const handleClickSignUp = async () => {
+    if (password1 !== password2 || !password2 || !password2){
+      alert('Sign up Failed');
+      return;
+    }
     const requestBody = {
       query: `
         mutation {
           createUser(userInput: {
             email: "${email}"
-            password: "${setPassword1}"
+            password: "${password1}"
           }){
             _id
             email
@@ -50,9 +54,14 @@ function SignUpPage() {
         url:'/graphql',
         method: 'POST',
         data: requestBody,
+
       });
-      console.log(result.data.data.createUser);
+      if(!result.data.data){
+        throw new Error('Sign up Failed');
+      }
+      alert('Sign up Succeed');
     } catch (err) {
+      alert('Sign up Failed');
       console.log(err);
     }
   }

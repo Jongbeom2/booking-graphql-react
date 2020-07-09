@@ -11,6 +11,7 @@ const userResolvers = {
         if(!user){
           throw new Error('User does not Exist!');
         }
+        console.log(user._doc.password);
         const isEqual = await bcrypt.compare(password,user._doc.password);
         if(!isEqual){
           throw new Error('Password is incorrect!');

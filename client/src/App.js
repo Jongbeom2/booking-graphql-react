@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Route, Redirect, Switch, Link } from 'react-router-dom';
 import './App.css';
+import HomePage from './pages/Home';
 import SignInPage from './pages/SignIn';
 import SignUpPage from './pages/SignUp';
 import BookingPage from './pages/Booking';
@@ -12,6 +13,8 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import AuthContext from './context/authContext';
+import PrivateRoute from './components/PrivateRoute';
 const useStyles = makeStyles(theme => ({
   root: {
     background: '#ecf0f1',
@@ -40,28 +43,49 @@ const useStyles = makeStyles(theme => ({
 }));
 function App() {
   const classes = useStyles();
+  const [token, setToken] = useState(1);
+  const [userId, setUserId] = useState(1);
+  const login = (token, userId, tokenExpiration) => {
+    setToken(token);
+    setUserId(userId);
+  }
+  const logout = () => {
+    setToken(null);
+    setUserId(null);
+  }
   return (
     <BrowserRouter>
-      <Switch>
-        <div className={classes.root}>
-          <div className={classes.main}>
-            <AppBar position="static">
-              <Toolbar>
-                <IconButton className={classes.menuButton} edge="start" color="inherit" aria-label="menu"><MenuIcon /></IconButton>
-                <Typography className={classes.title} variant="h6" >Booking</Typography>
-                <Button component = {Link} to ="/signin" color="inherit">SignIn</Button>
-                <Button component = {Link} to ="/event" color="inherit">Event</Button>
-                <Button component = {Link} to ="/booking" color="inherit">Booking</Button>
-              </Toolbar>
-            </AppBar>
-            <Redirect from="/" to="/auth" exact />
-            <Route path="/signin" component={SignInPage} />
-            <Route path="/signup" component={SignUpPage} />
-            <Route path="/event" component={EventPage} />
-            <Route path="/booking" component={BookingPage} />
+      <AuthContext.Provider value={{ token, userId, login, logout }}>
+        <Switch>
+          <div className={classes.root}>
+            <div className={classes.main}>
+              <AppBar position="static">
+                <Toolbar>
+                  <IconButton className={classes.menuButton} edge="start" color="inherit" aria-label="menu"><MenuIcon /></IconButton>
+                  <Typography className={classes.title} variant="h6" >Booking</Typography>
+                  <Button component={Link} to="/event" color="inherit">Event</Button>
+                  <Button component={Link} to="/booking" color="inherit">Booking</Button>
+                  {token
+                    ? <Button component={Link} to="/signin" onClick={logout} color="inherit">Logout</Button>
+                    : <Button component={Link} to="/signin" color="inherit">SignIn</Button>
+                  }
+                </Toolbar>
+              </AppBar>
+              {token && <Redirect from="/signin" to="/home" exact />}
+              {token && <Redirect from="/signup" to="/home" exact />}
+              <Route exact path="/home" component={HomePage} />
+              <Route exact path="/signin" component={SignInPage} />
+              <Route exact path="/signup" component={SignUpPage} />
+              <PrivateRoute exact path="/event" token={token}>
+                <EventPage />
+              </PrivateRoute>
+              <PrivateRoute exact path="/booking" token={token}>
+                <BookingPage />
+              </PrivateRoute>
+            </div>
           </div>
-        </div>
-      </Switch>
+        </Switch>
+      </AuthContext.Provider>
     </BrowserRouter>
   );
 }
