@@ -1,7 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Route, Redirect, Switch, Link } from 'react-router-dom';
 import './App.css';
-import AuthPage from './pages/Auth';
+import SignInPage from './pages/SignIn';
+import SignUpPage from './pages/SignUp';
 import BookingPage from './pages/Booking';
 import EventPage from './pages/Event';
 import { makeStyles } from '@material-ui/core/styles';
@@ -48,13 +49,14 @@ function App() {
               <Toolbar>
                 <IconButton className={classes.menuButton} edge="start" color="inherit" aria-label="menu"><MenuIcon /></IconButton>
                 <Typography className={classes.title} variant="h6" >Booking</Typography>
-                <Button component = {Link} to ="/auth" color="inherit">Auth</Button>
+                <Button component = {Link} to ="/signin" color="inherit">SignIn</Button>
                 <Button component = {Link} to ="/event" color="inherit">Event</Button>
                 <Button component = {Link} to ="/booking" color="inherit">Booking</Button>
               </Toolbar>
             </AppBar>
             <Redirect from="/" to="/auth" exact />
-            <Route path="/auth" component={AuthPage} />
+            <Route path="/signin" component={SignInPage} />
+            <Route path="/signup" component={SignUpPage} />
             <Route path="/event" component={EventPage} />
             <Route path="/booking" component={BookingPage} />
           </div>
