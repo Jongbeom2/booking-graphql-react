@@ -9,10 +9,11 @@ import Container from '@material-ui/core/Container';
 import eventImg from '../img/event.png';
 import EventCreateDialog from '../components/EventCreateDialog';
 import axios from 'axios';
-import { set } from 'mongoose';
+import Event from '../components/Event';
 const useStyles = makeStyles(theme => ({
   card: {
-    marginTop: theme.spacing(5)
+    marginTop: theme.spacing(5),
+    marginBottom: theme.spacing(3)
   },
   media: {
     height: '10rem'
@@ -26,12 +27,6 @@ function EventPage() {
   useEffect(() => {
     getEvents();
   }, []);
-  useEffect(() => {
-    setEventsComponent();
-  }, [events]);
-  const setEventsComponent = () => {
-    console.log(events);
-  }
   const getEvents = async () => {
     const requestBody = {
       query: `
@@ -65,31 +60,35 @@ function EventPage() {
       console.log(err);
     }
   }
-  const handleOpen = () => {
+  const handleDialogOpen = () => {
     setOpen(true);
   };
-  const handleClose = () => {
+  const handleDialogClose = () => {
     setOpen(false);
   };
   return (
     <div>
       <Container maxWidth="lg">
         <Card className={classes.card}>
-          <CardActionArea onClick={handleOpen}>
+          <CardActionArea onClick={handleDialogOpen}>
             <CardMedia
               className={classes.media}
               image={eventImg}
               title="Contemplative Reptile"
             />
             <CardContent>
-              <Typography className={classes.title} color="textSecondary" gutterBottom>
+              <Typography className={classes.title} variant ="h6" color="primary" gutterBottom>
                 Create event whatever you want!
-            </Typography>
+              </Typography>
             </CardContent>
           </CardActionArea>
         </Card>
+        {console.log(events)}
+        {events.map(event =>
+          (<Event title={event.title} description={event.description} price={event.price} date={event.date} creator={event.creator}/>)
+        )}
       </Container>
-      <EventCreateDialog handleClose={handleClose} open={open} getEvents={getEvents} />
+      <EventCreateDialog handleClose={handleDialogClose} open={open} getEvents={getEvents} />
     </div>
   );
 }

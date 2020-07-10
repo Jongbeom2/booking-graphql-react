@@ -2,6 +2,7 @@ type Query {
   getEvent(_id: String!): Event
   getEvents: [Event!]
   getBookings: [Booking!]
+  getUser(email:String!): User
   login(email:String!, password:String!): AuthData!
 }
 type AuthData{

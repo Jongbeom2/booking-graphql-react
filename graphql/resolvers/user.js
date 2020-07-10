@@ -5,6 +5,21 @@ const bcrypt = require('bcrypt');
 
 const userResolvers = {
   Query: {
+    getUser: async(_,args)=>{
+      console.log(args);
+      try {
+        // get user
+        const user = await User.findOne({ email: args.email });
+        if (!user) {
+          throw new Error('User not exist.');
+        }
+        // Return user
+        return { ...user._doc, password: null };
+      } catch (err) {
+        console.log(err);
+        throw err;
+      }
+    },
     login: async (_, {email, password}) => {
       try{
         const user = await User.findOne({email});
