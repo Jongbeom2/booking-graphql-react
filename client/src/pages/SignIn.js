@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
 import AuthContext from '../context/authContext';
+import LoadingContext from '../context/loadingContext';
 const useStyles = makeStyles(theme => ({
   title: {
     marginTop: theme.spacing(10)
@@ -23,6 +24,7 @@ function SignInPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { signIn } = useContext(AuthContext);
+  const {setIsLoading} = useContext(LoadingContext);
   const handleChangeEmail = (e) => {
     setEmail(e.target.value);
   }
@@ -30,6 +32,7 @@ function SignInPage() {
     setPassword(e.target.value);
   }
   const handleClickSignIn = async () => {
+    setIsLoading(true);
     const requestBody = {
       query: `
         query{
@@ -52,6 +55,7 @@ function SignInPage() {
       }
       signIn(result.data.data.login.token, result.data.data.login.userId, result.data.data.login.tokenExpiration);
       alert('Sign in Succeed');
+      setIsLoading(false);
     } catch (err) {
       alert('Sign in Failed');
       console.log(err);
