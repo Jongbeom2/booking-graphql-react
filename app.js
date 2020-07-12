@@ -27,7 +27,7 @@ server.express.get('*', (req, res, next)=>{
 })
 // set server options
 const options = {
-  port: 4000,
+  port: process.env.PORT || 4000,
   endpoint: '/graphql',
   subscriptions: '/subscriptions',
   playground: '/playground',
