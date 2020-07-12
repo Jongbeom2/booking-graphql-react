@@ -12,7 +12,7 @@ const server = new GraphQLServer({
   typeDefs: "./graphql/schema/schema.graphql",
   resolvers,
   context: req => ({ ...req }),
-  middlewares: [isAuth]
+  middlewares: [isAuth] 
 });
 // set production env
 if (process.env.NODE_ENV === "production") {
