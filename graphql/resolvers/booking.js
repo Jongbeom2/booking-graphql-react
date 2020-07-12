@@ -5,12 +5,14 @@ const Booking = require('../../models/booking');
 const bookingResolvers = {
   Query: {
     getBookings: async (_, arg,ctx) => {
+      // Check isAuth
       if(!ctx.isAuth){
         throw new Error('Unauthenticatd!');
       }
       try {
+        // Get bookings with userId
         const bookings = await Booking.find({ user: ctx.userId });
-        console.log(bookings);
+        // Return bookings
         return bookings.map(booking => ({ ...booking._doc, _id: booking.id }));
       } catch (err) {
         console.log(err);
@@ -24,8 +26,9 @@ const bookingResolvers = {
     },
     async user(_, args) {
       try {
-        // Get user and return user
+        // Get user with id
         const user = await User.findById(_.user);
+        // Return user
         return { ...user._doc, _id: user.id };
       } catch (err) {
         console.log(err);
@@ -34,8 +37,9 @@ const bookingResolvers = {
     },
     async event(_, args) {
       try {
-        // Get event and return event
+        // Get event with id
         const event = await Event.findById(_.event);
+        // Return event
         return { ...event._doc, _id: event.id };
       } catch (err) {
         console.log(err);
@@ -51,6 +55,7 @@ const bookingResolvers = {
   },
   Mutation: {
     bookEvent: async (_, args,ctx) => {
+      // Check isAuth
       if(!ctx.isAuth){
         throw new Error('Unauthenticatd!');
       }
@@ -69,6 +74,7 @@ const bookingResolvers = {
       }
     },
     cancelBooking: async (_, args,ctx) => {
+      // Check is Auth
       if(!ctx.isAuth){
         throw new Error('Unauthenticatd!');
       }

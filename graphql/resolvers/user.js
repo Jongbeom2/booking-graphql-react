@@ -2,18 +2,16 @@ const Event = require('../../models/event');
 const User = require('../../models/user');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-
 const userResolvers = {
   Query: {
     getUser: async(_,args)=>{
-      console.log(args);
       try {
-        // get user
+        // Get user with email
         const user = await User.findOne({ email: args.email });
         if (!user) {
           throw new Error('User not exist.');
         }
-        // Return user
+        // Return user except password
         return { ...user._doc, password: null };
       } catch (err) {
         console.log(err);
@@ -22,18 +20,21 @@ const userResolvers = {
     },
     login: async (_, {email, password}) => {
       try{
+        // Get user with email
         const user = await User.findOne({email});
         if(!user){
           throw new Error('User does not Exist!');
         }
-        console.log(user._doc.password);
+        // Compare password
         const isEqual = await bcrypt.compare(password,user._doc.password);
         if(!isEqual){
           throw new Error('Password is incorrect!');
         }
+        // Create token
         const token = jwt.sign({userId:user.id, email:user.email},'secretkey',{
           expiresIn: '1h'
         });
+        // Return userId, token, tokenExpiration
         return {
           userId: user.id,
           token,
@@ -54,7 +55,9 @@ const userResolvers = {
     },
     async createdEvents(_, args) {
       try {
+        // Get events with events id
         const events = await Event.find({ _id: { $in: _.createdEvents } })
+        // Return events
         return events.map(event => ({ ...event._doc, _id: event.id }));
       } catch (err) {
         console.log(err);

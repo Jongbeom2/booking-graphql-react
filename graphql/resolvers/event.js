@@ -15,7 +15,9 @@ const eventRsolvers = {
     },
     getEvents: async (_, args) => {
       try {
+        // Get evets
         const events = await Event.find();
+        // Return events
         return events.map(event => ({ ...event._doc, _id: event.id }));
       } catch (err) {
         console.log(err);
@@ -41,7 +43,9 @@ const eventRsolvers = {
     },
     async creator(_, args) {
       try {
+        // Get user with id
         const user = await User.findById(_.creator);
+        // Return user
         return { ...user._doc, _id: user.id }
       } catch (err) {
         console.log(err);

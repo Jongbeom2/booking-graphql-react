@@ -43,19 +43,19 @@ const useStyles = makeStyles(theme => ({
 }));
 function App() {
   const classes = useStyles();
-  const [token, setToken] = useState(1);
-  const [userId, setUserId] = useState(1);
-  const login = (token, userId, tokenExpiration) => {
+  const [token, setToken] = useState('');
+  const [userId, setUserId] = useState('');
+  const signIn = (token, userId, tokenExpiration) => {
     setToken(token);
     setUserId(userId);
   }
-  const logout = () => {
+  const signOut = () => {
     setToken(null);
     setUserId(null);
   }
   return (
     <BrowserRouter>
-      <AuthContext.Provider value={{ token, userId, login, logout }}>
+      <AuthContext.Provider value={{ token, userId, signIn, signOut }}>
         <Switch>
           <div className={classes.root}>
             <div className={classes.main}>
@@ -66,7 +66,7 @@ function App() {
                   <Button component={Link} to="/event" color="inherit">Event</Button>
                   <Button component={Link} to="/booking" color="inherit">Booking</Button>
                   {token
-                    ? <Button component={Link} to="/signin" onClick={logout} color="inherit">Logout</Button>
+                    ? <Button component={Link} to="/signin" onClick={signOut} color="inherit">Logout</Button>
                     : <Button component={Link} to="/signin" color="inherit">SignIn</Button>
                   }
                 </Toolbar>

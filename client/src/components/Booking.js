@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
 function Booking(props) {
   const { token} = useContext(AuthContext);
   const classes = useStyles();
-  const {id, createdAt, event} = props;
+  const {id, createdAt, event, getBookings} = props;
   const {title, date} = event;
   const handleBtnCancel = async () => {
     const requestBody = {
@@ -40,6 +40,7 @@ function Booking(props) {
       if(!result.data.data){
         throw new Error('Cancel Booking Failed');
       }
+      getBookings();
       alert('Cancel Booking Succeed');
     } catch (err) {
       alert('Cancel Booking Failed');

@@ -22,7 +22,7 @@ function SignInPage() {
   const classes = useStyles();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useContext(AuthContext);
+  const { signIn } = useContext(AuthContext);
   const handleChangeEmail = (e) => {
     setEmail(e.target.value);
   }
@@ -50,7 +50,7 @@ function SignInPage() {
       if(!result.data.data){
         throw new Error('Sign in Failed');
       }
-      login(result.data.data.login.token, result.data.data.login.userId, result.data.data.login.tokenExpiration);
+      signIn(result.data.data.login.token, result.data.data.login.userId, result.data.data.login.tokenExpiration);
       alert('Sign in Succeed');
     } catch (err) {
       alert('Sign in Failed');

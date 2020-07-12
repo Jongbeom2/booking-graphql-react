@@ -52,7 +52,7 @@ function BookingPage() {
   return (
     <Container maxWidth="lg" className={classes.root}>
       {bookings?.map(booking =>
-        (<Booking id={booking._id} createdAt={booking.createdAt} event={booking.event} />)
+        (<Booking getBookings = {getBookings} id={booking._id} createdAt={booking.createdAt} event={booking.event} />)
       )}
     </Container>
   );
