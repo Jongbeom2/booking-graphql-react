@@ -4,7 +4,6 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import Typography from '@material-ui/core/Typography';
 import axios from 'axios';
 function CreatorInfoDialog(props) {
@@ -12,7 +11,7 @@ function CreatorInfoDialog(props) {
   const [user, setUser] = useState('');
   useEffect(() => {
     getUser();
-  }, []);
+  },[]);
   const getUser = async () => {
     const requestBody = {
       query: `

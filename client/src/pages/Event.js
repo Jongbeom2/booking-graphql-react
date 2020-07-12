@@ -11,7 +11,7 @@ import EventCreateDialog from '../components/EventCreateDialog';
 import axios from 'axios';
 import Event from '../components/Event';
 const useStyles = makeStyles(theme => ({
-  card: {
+  createCard: {
     marginTop: theme.spacing(5),
     marginBottom: theme.spacing(3)
   },
@@ -69,7 +69,7 @@ function EventPage() {
   return (
     <div>
       <Container maxWidth="lg">
-        <Card className={classes.card}>
+        <Card className={classes.createCard}>
           <CardActionArea onClick={handleDialogOpen}>
             <CardMedia
               className={classes.media}
@@ -83,9 +83,8 @@ function EventPage() {
             </CardContent>
           </CardActionArea>
         </Card>
-        {console.log(events)}
         {events.map(event =>
-          (<Event title={event.title} description={event.description} price={event.price} date={event.date} creator={event.creator}/>)
+          (<Event id = {event._id} title={event.title} description={event.description} price={event.price} date={event.date} creator={event.creator}/>)
         )}
       </Container>
       <EventCreateDialog handleClose={handleDialogClose} open={open} getEvents={getEvents} />

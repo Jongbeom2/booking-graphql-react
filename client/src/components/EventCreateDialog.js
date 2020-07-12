@@ -9,14 +9,13 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import axios from 'axios';
 import AuthContext from '../context/authContext';
 function EventCreateDialog(props) {
-  const { token, userId} = useContext(AuthContext);
+  const { token} = useContext(AuthContext);
   const { open, handleClose, getEvents } = props;
   const [title, setTitle] = useState('');
   const [price, setPrice] = useState('');
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
   const handleCreate = async () => {
-    console.log(token, userId);
     if(!title || !price || !date || !description){
       alert('Create event failed');
       return;

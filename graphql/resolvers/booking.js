@@ -4,9 +4,13 @@ const Booking = require('../../models/booking');
 
 const bookingResolvers = {
   Query: {
-    getBookings: async (_, arg) => {
+    getBookings: async (_, arg,ctx) => {
+      if(!ctx.isAuth){
+        throw new Error('Unauthenticatd!');
+      }
       try {
-        const bookings = await Booking.find();
+        const bookings = await Booking.find({ user: ctx.userId });
+        console.log(bookings);
         return bookings.map(booking => ({ ...booking._doc, _id: booking.id }));
       } catch (err) {
         console.log(err);
@@ -53,7 +57,7 @@ const bookingResolvers = {
       try {
         // Save Booking
         const booking = new Booking({
-          user: '5f02fc658bfefb48785c2125',
+          user: ctx.userId,
           event: args.eventId
         });
         const result = await booking.save();
