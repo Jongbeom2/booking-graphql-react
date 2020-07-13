@@ -53,7 +53,7 @@ function SignInPage() {
       if(!result.data.data){
         throw new Error('Sign in Failed');
       }
-      signIn(result.data.data.login.token, result.data.data.login.userId, result.data.data.login.tokenExpiration);
+      signIn(result.data.data.login.token);
       alert('Sign in Succeed');
     } catch (err) {
       alert('Sign in Failed');

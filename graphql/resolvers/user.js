@@ -32,7 +32,7 @@ const userResolvers = {
         }
         // Create token
         const token = jwt.sign({userId:user.id, email:user.email},'secretkey',{
-          expiresIn: '1h'
+          expiresIn: '1m'
         });
         // Return userId, token, tokenExpiration
         return {

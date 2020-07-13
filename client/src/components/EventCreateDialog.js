@@ -10,7 +10,7 @@ import axios from 'axios';
 import AuthContext from '../context/authContext';
 import LoadingContext from '../context/loadingContext';
 function EventCreateDialog(props) {
-  const { token} = useContext(AuthContext);
+  const { signOut} = useContext(AuthContext);
   const { open, handleClose, getEvents } = props;
   const {setIsLoading} = useContext(LoadingContext);
   const [title, setTitle] = useState('');
@@ -47,16 +47,22 @@ function EventCreateDialog(props) {
         method: 'POST',
         data: requestBody,
         headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
+      if(result.data?.errors){
+        if (result.data.errors[0].message=== 'Unauthenticatd!'){
+          signOut();
+          throw new Error('Unauthenticatd');
+        }
+      }
       if(!result.data.data){
         throw new Error('Create event Failed');
       }
       alert('Create event Succeed');
       getEvents();
     } catch (err) {
-      alert('Create event Failed');
+      alert(err);
       console.log(err);
     } finally{
       setIsLoading(false);

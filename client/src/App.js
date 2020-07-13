@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Route, Redirect, Switch, Link } from 'react-router-dom';
 import './App.css';
 import HomePage from './pages/Home';
@@ -46,20 +46,25 @@ const useStyles = makeStyles(theme => ({
 function App() {
   const classes = useStyles();
   const [token, setToken] = useState('');
-  const [userId, setUserId] = useState('');
   const [isLoading, setIsLoading] = useState('');
-  const signIn = (token, userId, tokenExpiration) => {
+  useEffect(()=>{
+    const token = localStorage.getItem('token');
+    if (token){
+      setToken(token);
+    }
+  },[])
+  const signIn = (token) => {
     setToken(token);
-    setUserId(userId);
+    localStorage.setItem('token', token);
   }
   const signOut = () => {
     setToken(null);
-    setUserId(null);
+    localStorage.setItem('token', '');
   }
   return (
     <BrowserRouter>
       <LoadingContext.Provider value={{isLoading, setIsLoading}}>
-        <AuthContext.Provider value={{ token, userId, signIn }}>
+        <AuthContext.Provider value={{ signIn, signOut }}>
           <Switch>
             <div className={classes.root}>
               <div className={classes.main}>
@@ -70,7 +75,7 @@ function App() {
                     <Button component={Link} to="/event" color="inherit">Event</Button>
                     <Button component={Link} to="/booking" color="inherit">Booking</Button>
                     {token
-                      ? <Button component={Link} to="/signin" onClick={signOut} color="inherit">Logout</Button>
+                      ? <Button onClick={signOut} color="inherit">Logout</Button>
                       : <Button component={Link} to="/signin" color="inherit">SignIn</Button>
                     }
                   </Toolbar>

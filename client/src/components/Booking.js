@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 function Booking(props) {
-  const { token} = useContext(AuthContext);
+  const { signOut} = useContext(AuthContext);
   const {setIsLoading} = useContext(LoadingContext);
   const classes = useStyles();
   const {id, createdAt, event, getBookings} = props;
@@ -37,16 +37,22 @@ function Booking(props) {
         method: 'POST',
         data: requestBody,
         headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
+      if(result.data?.errors){
+        if (result.data.errors[0].message=== 'Unauthenticatd!'){
+          signOut();
+          throw new Error('Unauthenticatd');
+        }
+      }
       if(!result.data.data){
         throw new Error('Cancel Booking Failed');
       }
       getBookings();
       alert('Cancel Booking Succeed');
     } catch (err) {
-      alert('Cancel Booking Failed');
+      alert(err);
       console.log(err);
     } finally{
       setIsLoading(false);
