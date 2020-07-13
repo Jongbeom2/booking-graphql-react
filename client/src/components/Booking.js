@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import axios from 'axios';
 import AuthContext from '../context/authContext';
+import LoadingContext from '../context/loadingContext';
 const useStyles = makeStyles(theme => ({
   card: {
     marginBottom: theme.spacing(2)
@@ -14,6 +15,7 @@ const useStyles = makeStyles(theme => ({
 }));
 function Booking(props) {
   const { token} = useContext(AuthContext);
+  const {setIsLoading} = useContext(LoadingContext);
   const classes = useStyles();
   const {id, createdAt, event, getBookings} = props;
   const {title, date} = event;
@@ -29,6 +31,7 @@ function Booking(props) {
       `
     };
     try {
+      setIsLoading(true);
       const result = await axios({
         url:'/graphql',
         method: 'POST',
@@ -45,6 +48,8 @@ function Booking(props) {
     } catch (err) {
       alert('Cancel Booking Failed');
       console.log(err);
+    } finally{
+      setIsLoading(false);
     }
   }
   return (

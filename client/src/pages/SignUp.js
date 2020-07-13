@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useContext} from 'react';
 import { Link } from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Container from '@material-ui/core/Container';
@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import axios from 'axios';
+import LoadingContext from '../context/loadingContext';
 const useStyles = makeStyles(theme => ({
   title: {
     marginTop: theme.spacing(10)
@@ -22,6 +23,7 @@ function SignUpPage() {
   const [email, setEmail] = useState('');
   const [password1, setPassword1] = useState('');
   const [password2, setPassword2] = useState('');
+  const {setIsLoading} = useContext(LoadingContext);
   const handleChangeEmail = (e) => {
     setEmail(e.target.value);
   }
@@ -32,10 +34,6 @@ function SignUpPage() {
     setPassword2(e.target.value);
   }
   const handleClickSignUp = async () => {
-    if (password1 !== password2 || !password2 || !password2){
-      alert('Sign up Failed');
-      return;
-    }
     const requestBody = {
       query: `
         mutation {
@@ -50,6 +48,10 @@ function SignUpPage() {
       `
     };
     try {
+      setIsLoading(true);
+      if (password1 !== password2 || !password2 || !password2){
+        throw new Error('Sign up Failed');
+      }
       const result = await axios({
         url:'/graphql',
         method: 'POST',
@@ -63,6 +65,8 @@ function SignUpPage() {
     } catch (err) {
       alert('Sign up Failed');
       console.log(err);
+    } finally{
+      setIsLoading(false);
     }
   }
   return (

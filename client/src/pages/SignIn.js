@@ -32,7 +32,6 @@ function SignInPage() {
     setPassword(e.target.value);
   }
   const handleClickSignIn = async () => {
-    setIsLoading(true);
     const requestBody = {
       query: `
         query{
@@ -45,6 +44,7 @@ function SignInPage() {
       `
     };
     try {
+      setIsLoading(true);
       const result = await axios({
         url: '/graphql',
         method: 'POST',
@@ -55,10 +55,11 @@ function SignInPage() {
       }
       signIn(result.data.data.login.token, result.data.data.login.userId, result.data.data.login.tokenExpiration);
       alert('Sign in Succeed');
-      setIsLoading(false);
     } catch (err) {
       alert('Sign in Failed');
       console.log(err);
+    } finally{
+      setIsLoading(false);
     }
   }
   return (

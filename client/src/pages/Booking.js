@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Booking from '../components/Booking';
 import AuthContext from '../context/authContext';
+import LoadingContext from '../context/loadingContext';
 import axios from 'axios';
 const useStyles = makeStyles(theme => ({
   root: {
@@ -11,6 +12,7 @@ const useStyles = makeStyles(theme => ({
 }));
 function BookingPage() {
   const { token } = useContext(AuthContext);
+  const {setIsLoading} = useContext(LoadingContext);
   const classes = useStyles();
   const [bookings, setBookings] = useState([]);
   useEffect(() => {
@@ -32,6 +34,7 @@ function BookingPage() {
       `
     };
     try {
+      setIsLoading(true);
       const result = await axios({
         url: '/graphql',
         method: 'POST',
@@ -47,6 +50,8 @@ function BookingPage() {
     } catch (err) {
       alert('Get bookings Failed');
       console.log(err);
+    } finally{
+      setIsLoading(false);
     }
   }
   return (

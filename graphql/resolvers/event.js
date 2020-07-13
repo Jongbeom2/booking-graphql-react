@@ -66,11 +66,11 @@ const eventRsolvers = {
           description: input.description,
           price: +input.price,
           date: new Date(input.date),
-          creator: '5f02fc658bfefb48785c2125'
+          creator: ctx.userId
         })
         const result = await event.save();
         // Save event in user
-        const user = await User.findById('5f02fc658bfefb48785c2125');
+        const user = await User.findById(ctx.userId);
         if (!user) {
           throw new Error('User not exists.');
         }

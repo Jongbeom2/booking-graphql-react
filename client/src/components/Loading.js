@@ -2,6 +2,7 @@ import React, {useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import LoadingContext from '../context/loadingContext';
+import zIndex from '@material-ui/core/styles/zIndex';
 const useStyles = makeStyles(theme => ({
   root: {
     position: 'absolute',
@@ -10,7 +11,7 @@ const useStyles = makeStyles(theme => ({
     width: '-webkit-fill-available',
     height: '-webkit-fill-available',
     background: 'black',
-    opacity: '0.5'
+    opacity: '0.5',
   },
   icon:{
     position: 'absolute',

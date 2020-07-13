@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -10,6 +10,7 @@ import eventImg from '../img/event.png';
 import EventCreateDialog from '../components/EventCreateDialog';
 import axios from 'axios';
 import Event from '../components/Event';
+import LoadingContext from '../context/loadingContext';
 const useStyles = makeStyles(theme => ({
   createCard: {
     marginTop: theme.spacing(5),
@@ -24,6 +25,7 @@ function EventPage() {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [events, setEvents] = useState([]);
+  const {setIsLoading} = useContext(LoadingContext);
   useEffect(() => {
     getEvents();
   }, []);
@@ -46,6 +48,7 @@ function EventPage() {
       `
     };
     try {
+      setIsLoading(true);
       const result = await axios({
         url: '/graphql',
         method: 'POST',
@@ -58,6 +61,8 @@ function EventPage() {
     } catch (err) {
       alert('Get events Failed');
       console.log(err);
+    } finally{
+      setIsLoading(false);
     }
   }
   const handleDialogOpen = () => {

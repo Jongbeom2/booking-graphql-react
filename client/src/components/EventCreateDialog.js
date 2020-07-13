@@ -8,18 +8,16 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import axios from 'axios';
 import AuthContext from '../context/authContext';
+import LoadingContext from '../context/loadingContext';
 function EventCreateDialog(props) {
   const { token} = useContext(AuthContext);
   const { open, handleClose, getEvents } = props;
+  const {setIsLoading} = useContext(LoadingContext);
   const [title, setTitle] = useState('');
   const [price, setPrice] = useState('');
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
   const handleCreate = async () => {
-    if(!title || !price || !date || !description){
-      alert('Create event failed');
-      return;
-    }
     const requestBody = {
       query: `
         mutation{
@@ -39,6 +37,11 @@ function EventCreateDialog(props) {
       `
     };
     try {
+      handleClose();
+      setIsLoading(true);
+      if(!title || !price || !date || !description){
+        throw new Error('Create event Failed');
+      }
       const result = await axios({
         url:'/graphql',
         method: 'POST',
@@ -52,10 +55,11 @@ function EventCreateDialog(props) {
       }
       alert('Create event Succeed');
       getEvents();
-      handleClose();
     } catch (err) {
       alert('Create event Failed');
       console.log(err);
+    } finally{
+      setIsLoading(false);
     }
   }
   const handleChangeTitle = (e) => {

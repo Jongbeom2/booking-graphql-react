@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import CreatorInfoDialog from '../components/CreatorInfoDialog';
 import AuthContext from '../context/authContext';
 import axios from 'axios';
+import LoadingContext from '../context/loadingContext';
 const useStyles = makeStyles(theme => ({
   card: {
     marginBottom: theme.spacing(2)
@@ -16,6 +17,7 @@ const useStyles = makeStyles(theme => ({
 
 function Event(props) {
   const { token} = useContext(AuthContext);
+  const {setIsLoading} = useContext(LoadingContext);
   const classes = useStyles();
   const {id, title, price, description, date, creator} = props;
   const [open, setOpen] = useState(false);
@@ -36,6 +38,7 @@ function Event(props) {
       `
     };
     try {
+      setIsLoading(true);
       const result = await axios({
         url:'/graphql',
         method: 'POST',
@@ -51,6 +54,8 @@ function Event(props) {
     } catch (err) {
       alert('Booking Failed');
       console.log(err);
+    } finally{
+      setIsLoading(false);
     }
   }
   return (
