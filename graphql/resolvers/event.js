@@ -27,6 +27,7 @@ const eventRsolvers = {
   },
   Event: {
     _id(_, args) {
+      console.log('Return Event!')
       return _._id;
     },
     title(_, args) {
