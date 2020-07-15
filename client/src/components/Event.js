@@ -7,8 +7,9 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import CreatorInfoDialog from '../components/CreatorInfoDialog';
 import AuthContext from '../context/authContext';
-import axios from 'axios';
 import LoadingContext from '../context/loadingContext';
+import gql from 'graphql-tag';
+import { useMutation, } from '@apollo/react-hooks';
 const useStyles = makeStyles(theme => ({
   card: {
     marginBottom: theme.spacing(2)
@@ -21,48 +22,40 @@ function Event(props) {
   const classes = useStyles();
   const {id, title, price, description, date, creator} = props;
   const [open, setOpen] = useState(false);
+  const BOOK_EVENT = gql`
+    mutation bookEvent($eventId: ID!){
+      bookEvent(eventId: $eventId){
+        _id
+      }
+    }
+  `
+  const [bookEvent, {  data, loading, error }] = useMutation(BOOK_EVENT);
+  if (loading) {
+    setIsLoading(true);
+  }
+  if (data) {
+    setIsLoading(false);
+  }
   const handleDialogOpen = () => {
     setOpen(true);
   };
   const handleDialogClose = () => {
     setOpen(false);
   };
-  const handleBtnBooking = async () => {
-    const requestBody = {
-      query: `
-        mutation{
-          bookEvent(eventId:"${id}"){
-            _id
-          }
-        }
-      `
-    };
-    try {
-      setIsLoading(true);
-      const result = await axios({
-        url:'/graphql',
-        method: 'POST',
-        data: requestBody,
-        headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      if(result.data?.errors){
-        if (result.data.errors[0].message=== 'Unauthenticatd!'){
-          signOut();
-          throw new Error('Unauthenticatd');
-        }
+  const handleBtnBooking = () => {
+    bookEvent({
+      variables: { eventId: id},
+    })
+    .catch(err=>{
+      console.log(err)
+      if(err.graphQLErrors[0].message==='Unauthenticatd!'){
+        signOut();
+        console.log(err.graphQLErrors);
+        alert('Unauthenticatd!');
       }
-      if(!result.data.data){
-        throw new Error('Booking Failed');
-      }
-      alert('Booking Succeed');
-    } catch (err) {
-      alert(err);
-      console.log(err);
-    } finally{
       setIsLoading(false);
-    }
+      console.log(err)
+    });
   }
   return (
     <div>

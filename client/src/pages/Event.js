@@ -11,7 +11,7 @@ import EventCreateDialog from '../components/EventCreateDialog';
 import Event from '../components/Event';
 import LoadingContext from '../context/loadingContext';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, } from '@apollo/react-hooks';
 const useStyles = makeStyles(theme => ({
   createCard: {
     marginTop: theme.spacing(5),
@@ -27,7 +27,7 @@ function EventPage() {
   const [open, setOpen] = useState(false);
   const { setIsLoading } = useContext(LoadingContext);
   const GET_EVENTS = gql`
-    query eventLis{
+    query eventList{
       getEvents{
         _id
         title
@@ -41,7 +41,7 @@ function EventPage() {
       }
     }
   `
-  const { data, loading, error } = useQuery(GET_EVENTS);
+  const { data, loading, error, refetch } = useQuery(GET_EVENTS);
   if (loading) {
     setIsLoading(true);
   }
@@ -49,10 +49,6 @@ function EventPage() {
     setIsLoading(false);
   }
   if (error) return <p>ERROR</p>;
-  if (!data) return <p>Not found</p>;
-  const getEvents = async () => {
-
-  }
   const handleDialogOpen = () => {
     setOpen(true);
   };
@@ -79,7 +75,7 @@ function EventPage() {
           (<Event id={event._id} title={event.title} description={event.description} price={event.price} date={event.date} creator={event.creator} />)
         )}
       </Container>
-      <EventCreateDialog handleClose={handleDialogClose} open={open} getEvents={getEvents} />
+      <EventCreateDialog handleClose={handleDialogClose} open={open} getEvents={refetch} />
     </div>
   );
 }
