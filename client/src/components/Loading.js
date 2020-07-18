@@ -1,7 +1,6 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import LoadingContext from '../context/loadingContext';
 const useStyles = makeStyles(theme => ({
   root: {
     position: 'absolute',
@@ -19,15 +18,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 function Loading() {
-  const { isLoading} = useContext(LoadingContext);
   const classes = useStyles();
   return(
-    <div >
-      {isLoading
-      ?<div className = {classes.root}>
-        <CircularProgress className={classes.icon} />
-      </div>
-      :null}
+    <div className = {classes.root}>
+      <CircularProgress className={classes.icon} />
     </div>
   )
 }

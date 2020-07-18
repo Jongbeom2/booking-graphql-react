@@ -14,8 +14,6 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import AuthContext from './context/authContext';
-import Loading from './components/Loading';
-import LoadingContext from './context/loadingContext';
 import PrivateRoute from './components/PrivateRoute';
 const useStyles = makeStyles(theme => ({
   root: {
@@ -46,7 +44,6 @@ const useStyles = makeStyles(theme => ({
 function App() {
   const classes = useStyles();
   const [token, setToken] = useState('');
-  const [isLoading, setIsLoading] = useState('');
   useEffect(()=>{
     const token = localStorage.getItem('token');
     if (token){
@@ -61,43 +58,41 @@ function App() {
     setToken(null);
     localStorage.setItem('token', '');
   }
+  console.log('Render')
   return (
     <BrowserRouter>
-      <LoadingContext.Provider value={{isLoading, setIsLoading}}>
-        <AuthContext.Provider value={{ signIn, signOut }}>
-          <Switch>
-            <div className={classes.root}>
-              <div className={classes.main}>
-                <AppBar position="static">
-                  <Toolbar>
-                    <IconButton className={classes.menuButton} edge="start" color="inherit" aria-label="menu"><MenuIcon /></IconButton>
-                    <Typography className={classes.title} variant="h6" >Booking</Typography>
-                    <Button component={Link} to="/event" color="inherit">Event</Button>
-                    <Button component={Link} to="/booking" color="inherit">Booking</Button>
-                    {token
-                      ? <Button onClick={signOut} color="inherit">Logout</Button>
-                      : <Button component={Link} to="/signin" color="inherit">SignIn</Button>
-                    }
-                  </Toolbar>
-                </AppBar>
-                {token && <Redirect from="/signin" to="/home" exact />}
-                {token && <Redirect from="/signup" to="/home" exact />}
-                <Route exact path="/" component={HomePage} />
-                <Route exact path="/home" component={HomePage} />
-                <Route exact path="/signin" component={SignInPage} />
-                <Route exact path="/signup" component={SignUpPage} />
-                <PrivateRoute exact path="/event" token={token}>
-                  <EventPage />
-                </PrivateRoute>
-                <PrivateRoute exact path="/booking" token={token}>
-                  <BookingPage />
-                </PrivateRoute>
-              </div>
+      <AuthContext.Provider value={{ signIn, signOut }}>
+        <Switch>
+          <div className={classes.root}>
+            <div className={classes.main}>
+              <AppBar position="static">
+                <Toolbar>
+                  <IconButton className={classes.menuButton} edge="start" color="inherit" aria-label="menu"><MenuIcon /></IconButton>
+                  <Typography className={classes.title} variant="h6" >Booking</Typography>
+                  <Button component={Link} to="/event" color="inherit">Event</Button>
+                  <Button component={Link} to="/booking" color="inherit">Booking</Button>
+                  {token
+                    ? <Button onClick={signOut} color="inherit">Logout</Button>
+                    : <Button component={Link} to="/signin" color="inherit">SignIn</Button>
+                  }
+                </Toolbar>
+              </AppBar>
+              {token && <Redirect from="/signin" to="/home" exact />}
+              {token && <Redirect from="/signup" to="/home" exact />}
+              <Route exact path="/" component={HomePage} />
+              <Route exact path="/home" component={HomePage} />
+              <Route exact path="/signin" component={SignInPage} />
+              <Route exact path="/signup" component={SignUpPage} />
+              <PrivateRoute exact path="/event" token={token}>
+                <EventPage />
+              </PrivateRoute>
+              <PrivateRoute exact path="/booking" token={token}>
+                <BookingPage />
+              </PrivateRoute>
             </div>
-          </Switch>
-          <Loading/>
-        </AuthContext.Provider>
-      </LoadingContext.Provider>
+          </div>
+        </Switch>
+      </AuthContext.Provider>
     </BrowserRouter>
   );
 }

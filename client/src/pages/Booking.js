@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Booking from '../components/Booking';
 import AuthContext from '../context/authContext';
-import LoadingContext from '../context/loadingContext';
+import Loading from '../components/Loading';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 const useStyles = makeStyles(theme => ({
@@ -13,7 +13,6 @@ const useStyles = makeStyles(theme => ({
 }));
 function BookingPage() {
   const { signOut } = useContext(AuthContext);
-  const {setIsLoading} = useContext(LoadingContext);
   const classes = useStyles();
   const GET_BOOKINGS = gql`
     query bookingList{
@@ -27,20 +26,27 @@ function BookingPage() {
       }
     }
   `
-  const { data, loading, error, refetch } = useQuery(GET_BOOKINGS);
-  if (loading) {
-    setIsLoading(true);
-  }
-  if (data) {
-    setIsLoading(false);
-  }
-  if (error) return <p>ERROR</p>;
+  const { data, loading, refetch } = useQuery(GET_BOOKINGS,{
+    onError: (error)=>{
+      if (error.graphQLErrors[0].message === 'Unauthenticatd!') {
+        signOut();
+        alert('Unauthenticatd');
+        console.log('Unauthenticatd', error);
+      }else{
+        alert('Get Bookings Failed');
+        console.log('Get Bookings Failed', error);
+      }
+    }
+  });
   return (
-    <Container maxWidth="lg" className={classes.root}>
+    <div>
+      {loading?<Loading/>:null}
+      <Container maxWidth="lg" className={classes.root}>
       {data?.getBookings.map(booking =>
-        (<Booking getBookings = {refetch} id={booking._id} createdAt={booking.createdAt} event={booking.event} />)
+        (<Booking getBookings={refetch} id={booking._id} createdAt={booking.createdAt} event={booking.event} />)
       )}
     </Container>
+    </div>
   );
 }
 export default BookingPage;

@@ -5,9 +5,10 @@ import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import axios from 'axios';
 import AuthContext from '../context/authContext';
-import LoadingContext from '../context/loadingContext';
+import Loading from '../components/Loading';
+import gql from 'graphql-tag';
+import { useLazyQuery , } from '@apollo/react-hooks';
 const useStyles = makeStyles(theme => ({
   title: {
     marginTop: theme.spacing(10)
@@ -24,52 +25,46 @@ function SignInPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { signIn } = useContext(AuthContext);
-  const {setIsLoading} = useContext(LoadingContext);
   const handleChangeEmail = (e) => {
     setEmail(e.target.value);
   }
   const handleChangePassword = (e) => {
     setPassword(e.target.value);
   }
-  const handleClickSignIn = async () => {
-    const requestBody = {
-      query: `
-        query{
-          login(email: "${email}", password: "${password}"){
-            userId
-            token
-            tokenExpiration
-          }
-        }
-      `
-    };
-    try {
-      setIsLoading(true);
-      const result = await axios({
-        url: '/graphql',
-        method: 'POST',
-        data: requestBody,
-      })
-      if(!result.data.data){
-        throw new Error('Sign in Failed');
+  const SIGNIN = gql`
+    query signIn($email: String!, $password: String!){
+      login(email: $email, password: $password){
+        userId
+        token
+        tokenExpiration
       }
-      signIn(result.data.data.login.token);
-      alert('Sign in Succeed');
-    } catch (err) {
-      alert('Sign in Failed');
-      console.log(err);
-    } finally{
-      setIsLoading(false);
     }
+  `
+  const[doSignIn,{loading}]= useLazyQuery(SIGNIN,{
+    onCompleted: (data)=>{
+      alert('Sign In Succeed');
+      console.log('Sign In Succeed', data);
+      signIn(data.login.token);
+    },
+    onError: (error)=>{
+      alert('Sign In Failed')
+      console.log('Sign In Failed', error);
+    }
+  });
+  const handleClickSignIn = () => {
+    doSignIn({
+      variables: { email, password }
+    });
   }
   return (
     <div>
+      {loading?<Loading/>:null}
       <Container maxWidth="xs">
-        <Typography className={classes.title} variant="h4" align="center" paragraph="true">Sign in</Typography>
-        <TextField label="Email" fullWidth="true" margin="normal" onChange={handleChangeEmail} />
-        <TextField type="password" label="Password" fullWidth="true" margin="normal" onChange={handleChangePassword} />
-        <Button className={classes.signInbutton} variant="contained" color="primary" fullWidth="true" size="large" onClick={handleClickSignIn}>Sign in</Button>
-        <Button component={Link} to="/signup" className={classes.signUpbutton} variant="outlined" fullWidth="true" size="large">Don't have an account? Sign Up</Button>
+        <Typography className={classes.title} variant="h4" align="center" paragraph>Sign in</Typography>
+        <TextField label="Email" fullWidth margin="normal" onChange={handleChangeEmail} />
+        <TextField type="password" label="Password" fullWidth margin="normal" onChange={handleChangePassword} />
+        <Button className={classes.signInbutton} variant="contained" color="primary" fullWidth size="large" onClick={handleClickSignIn}>Sign in</Button>
+        <Button component={Link} to="/signup" className={classes.signUpbutton} variant="outlined" fullWidth size="large">Don't have an account? Sign Up</Button>
       </Container>
     </div>
   );

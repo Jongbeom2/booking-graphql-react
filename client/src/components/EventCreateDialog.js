@@ -6,73 +6,59 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import axios from 'axios';
 import AuthContext from '../context/authContext';
-import LoadingContext from '../context/loadingContext';
+import Loading from '../components/Loading';
+import gql from 'graphql-tag';
+import { useMutation, } from '@apollo/react-hooks';
 function EventCreateDialog(props) {
   const { signOut} = useContext(AuthContext);
   const { open, handleClose, getEvents } = props;
-  const {setIsLoading} = useContext(LoadingContext);
   const [title, setTitle] = useState('');
   const [price, setPrice] = useState('');
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
-  const handleCreate = async () => {
-    const requestBody = {
-      query: `
-        mutation{
-          createEvent(eventInput:{
-            title: "${title}"
-            description: "${description}"
-            price: ${+price}
-            date: "${date}"
-          }){
-            _id
-            title
-            description
-            price
-            date
-          }
-        }
-      `
-    };
-    try {
-      handleClose();
-      setIsLoading(true);
-      if(!title || !price || !date || !description){
-        throw new Error('Create event Failed');
+  const CREATE_EVENT = gql`
+    mutation createEvent($eventInput: EventInput){
+      createEvent(eventInput: $eventInput){
+        title
+        description
+        price
+        date
       }
-      const result = await axios({
-        url:'/graphql',
-        method: 'POST',
-        data: requestBody,
-        headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      if(result.data?.errors){
-        if (result.data.errors[0].message=== 'Unauthenticatd!'){
-          signOut();
-          throw new Error('Unauthenticatd');
-        }
-      }
-      if(!result.data.data){
-        throw new Error('Create event Failed');
-      }
+    }
+  `
+  const [createEvent, { loading }] = useMutation(CREATE_EVENT, {
+    onCompleted: (data) => {
       alert('Create event Succeed');
       getEvents();
-    } catch (err) {
-      alert(err);
-      console.log(err);
-    } finally{
-      setIsLoading(false);
+      console.log('Create event Succeed', data)
+      handleClose();
+    },
+    onError: (error) => {
+      if (error.graphQLErrors[0]?.message === 'Unauthenticatd!') {
+        signOut();
+        alert('Unauthenticatd');
+        console.log('Unauthenticatd', error);
+      }else{
+        alert('Create event Failed');
+        console.log('Create event Failed', error);
+      }
     }
+  });
+  const handleCreate = () => {
+    if (!title || !price || !date || !description) {
+      alert('All Fileds Can\'t Be Empty');
+      return;
+    }
+    createEvent({
+      variables: { eventInput: { title, price, date, description } }
+    })
   }
   const handleChangeTitle = (e) => {
     setTitle(e.target.value);
   }
   const handleChangePrice = (e) => {
-    setPrice(e.target.value);
+    setPrice(parseFloat(e.target.value));
   }
   const handleChangeDate = (e) => {
     setDate(e.target.value);
@@ -80,9 +66,9 @@ function EventCreateDialog(props) {
   const handleChangeDescription = (e) => {
     setDescription(e.target.value);
   }
-  
   return (
     <div>
+      {loading ? <Loading /> : null}
       <Dialog open={open} onClose={handleClose} >
         <DialogTitle>Create Event</DialogTitle>
         <DialogContent>

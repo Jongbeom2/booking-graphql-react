@@ -14,7 +14,6 @@ const server = new ApolloServer({
   resolvers,
   context: ({req}) => { 
     const {isAuth, userId} = getAuth(req);
-    console.log(isAuth,userId);
     return { isAuth, userId }
   }, 
 }); 

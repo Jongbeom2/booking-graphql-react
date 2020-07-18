@@ -5,9 +5,10 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import axios from 'axios';
 import AuthContext from '../context/authContext';
-import LoadingContext from '../context/loadingContext';
+import gql from 'graphql-tag';
+import { useMutation, } from '@apollo/react-hooks';
+import Loading from '../components/Loading';
 const useStyles = makeStyles(theme => ({
   card: {
     marginBottom: theme.spacing(2)
@@ -15,67 +16,58 @@ const useStyles = makeStyles(theme => ({
 }));
 function Booking(props) {
   const { signOut} = useContext(AuthContext);
-  const {setIsLoading} = useContext(LoadingContext);
   const classes = useStyles();
   const {id, createdAt, event, getBookings} = props;
   const {title, date} = event;
-  const handleBtnCancel = async () => {
-    const requestBody = {
-      query: `
-        mutation{
-          cancelBooking(bookingId:"${id}"){
-            _id
-            title
-          }
-        }
-      `
-    };
-    try {
-      setIsLoading(true);
-      const result = await axios({
-        url:'/graphql',
-        method: 'POST',
-        data: requestBody,
-        headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      if(result.data?.errors){
-        if (result.data.errors[0].message=== 'Unauthenticatd!'){
-          signOut();
-          throw new Error('Unauthenticatd');
-        }
+  const CANCEL_BOOKING = gql`
+    mutation cancelBooking($bookingId: ID!){
+      cancelBooking(bookingId:$bookingId){
+        _id
+        title
       }
-      if(!result.data.data){
-        throw new Error('Cancel Booking Failed');
-      }
+    }
+  `
+  const [cancelBooking, {  loading }] = useMutation(CANCEL_BOOKING,{
+    onCompleted: (data)=>{
       getBookings();
       alert('Cancel Booking Succeed');
-    } catch (err) {
-      alert(err);
-      console.log(err);
-    } finally{
-      setIsLoading(false);
+      console.log('Cancel Booking Succeed', data);
+    },
+    onError: (error)=>{
+      if (error.graphQLErrors[0].message === 'Unauthenticatd!') {
+        signOut();
+        alert('Unauthenticatd');
+        console.log('Unauthenticatd', error);
+      }else{
+        alert('Get Bookings Failed');
+        console.log('Get Bookings Failed', error);
+      }
     }
+  });
+  const handleBtnCancel = () => {
+    cancelBooking({
+      variables: { bookingId: id }
+    })   
   }
   return (
     <div>
-    <Card className={classes.card} variant="outlined">
-      <CardContent>
-        <Typography variant ="h4" color="primary" gutterBottom>
-          {title}
-        </Typography>
-        <Typography variant="body2" gutterBottom>
-          Event Date : {date}
-        </Typography>
-        <Typography variant="body2">
-          Booking Date : {createdAt}
-        </Typography>
-      </CardContent>
-      <CardActions>
-        <Button color="primary"size="small" onClick = {handleBtnCancel}>Cancel</Button>
-      </CardActions>
-    </Card>
+      {loading?<Loading/>:null}
+      <Card className={classes.card} variant="outlined">
+        <CardContent>
+          <Typography variant ="h4" color="primary" gutterBottom>
+            {title}
+          </Typography>
+          <Typography variant="body2" gutterBottom>
+            Event Date : {date}
+          </Typography>
+          <Typography variant="body2">
+            Booking Date : {createdAt}
+          </Typography>
+        </CardContent>
+        <CardActions>
+          <Button color="primary"size="small" onClick = {handleBtnCancel}>Cancel</Button>
+        </CardActions>
+      </Card>
     </div>
   );
 }

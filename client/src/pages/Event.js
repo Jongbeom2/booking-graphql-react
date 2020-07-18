@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -9,9 +9,9 @@ import Container from '@material-ui/core/Container';
 import eventImg from '../img/event.png';
 import EventCreateDialog from '../components/EventCreateDialog';
 import Event from '../components/Event';
-import LoadingContext from '../context/loadingContext';
 import gql from 'graphql-tag';
 import { useQuery, } from '@apollo/react-hooks';
+import Loading from '../components/Loading';
 const useStyles = makeStyles(theme => ({
   createCard: {
     marginTop: theme.spacing(5),
@@ -25,7 +25,12 @@ const useStyles = makeStyles(theme => ({
 function EventPage() {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const { setIsLoading } = useContext(LoadingContext);
+  const handleDialogOpen = () => {
+    setOpen(true);
+  };
+  const handleDialogClose = () => {
+    setOpen(false);
+  };
   const GET_EVENTS = gql`
     query eventList{
       getEvents{
@@ -37,33 +42,26 @@ function EventPage() {
         creator{
           _id
           email
+          createdEvents{
+            title
+          }
         }
       }
     }
   `
-  const { data, loading, error, refetch } = useQuery(GET_EVENTS);
-  if (loading) {
-    setIsLoading(true);
-  }
-  if (data) {
-    setIsLoading(false);
-  }
-  if (error) return <p>ERROR</p>;
-  const handleDialogOpen = () => {
-    setOpen(true);
-  };
-  const handleDialogClose = () => {
-    setOpen(false);
-  };
+  const { data,  loading, refetch } = useQuery(GET_EVENTS,{
+    onError: (error)=>{
+      alert('Get Events Failed')
+      console.log('Get Events Failed', error);
+    }
+  });
   return (
     <div>
+      {loading?<Loading/>:null}
       <Container maxWidth="lg">
         <Card className={classes.createCard}>
           <CardActionArea onClick={handleDialogOpen}>
-            <CardMedia
-              className={classes.media}
-              image={eventImg}
-            />
+            <CardMedia className={classes.media} image={eventImg}/>
             <CardContent>
               <Typography className={classes.title} variant="h6" color="primary" gutterBottom>
                 Create event whatever you want!
@@ -72,7 +70,7 @@ function EventPage() {
           </CardActionArea>
         </Card>
         {data?.getEvents.map(event =>
-          (<Event id={event._id} title={event.title} description={event.description} price={event.price} date={event.date} creator={event.creator} />)
+          (<Event key = {event._id} id={event._id} title={event.title} description={event.description} price={event.price} date={event.date} creator={event.creator} />)
         )}
       </Container>
       <EventCreateDialog handleClose={handleDialogClose} open={open} getEvents={refetch} />
