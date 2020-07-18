@@ -13,7 +13,7 @@ const app = express();
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  playground: true,
+  playground: process.env.NODE_ENV?false:true,
   context: ({ req }) => {
     const { isAuth, userId } = getAuth(req);
     return { isAuth, userId }
@@ -33,5 +33,5 @@ app.get('*', (req, res, next)=>{
 })
 // start server
 app.listen({ port: process.env.PORT || 4000 }, () =>
-  console.log(`🚀 Server ready`)
+  console.log(`🚀 Server ready ${process.env.PORT || 4000}`)
 );
