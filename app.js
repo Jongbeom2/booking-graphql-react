@@ -17,7 +17,7 @@ const server = new ApolloServer({
     return { isAuth, userId }
   }, 
 }); 
-/*
+
 // set production env
 if (process.env.NODE_ENV === "production") {
   server.express.use(express.static(path.join(__dirname, "./client/build")));
@@ -29,20 +29,7 @@ server.express.get('*', (req, res, next)=>{
     next();
   } 
 })
-// set server options
-const options = {
-  port: process.env.PORT || 4000,
-  endpoint: '/graphql',
-  subscriptions: '/subscriptions',
-  playground: '/playground',
-}
-// start server
-server.start(options, ({ port }) =>
-  console.log(
-    `Server started, listening on port ${port} for incoming requests.`,
-  ),
-)
-*/
+
 server.listen().then(({ url }) => {
   console.log(`🚀 Server ready at ${url}`);
 });
