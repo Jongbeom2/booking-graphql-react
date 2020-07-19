@@ -1,5 +1,5 @@
 # Booking Event
-Event를 생성하고 Event 참석을 예약 및 취소하는 애플리케이션입니다.
+Event를 생성하고 Event 참석을 예약 및 취소하는 애플리케이션
 
 ## 기능
 - 로그인
