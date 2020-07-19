@@ -15,7 +15,7 @@ Event를 생성하고 Event 참석을 예약 및 취소하는 애플리케이션
 - Database : MongoDB
 - Deployed : Heroku
 
-## Installation and start producton mode
+## Start producton mode
 1. 레포지토리의 소스코드 pull
 2. npm i
 3. .env에서 DB_USER(MongoDB user 입력), DB_PASSWORD(MongoDB password 입력), SECRET_KEY, NODE_ENV(production 입력) 설정
