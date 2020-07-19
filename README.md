@@ -15,10 +15,22 @@ Event를 생성하고 Event 참석을 예약 및 취소하는 애플리케이션
 - Database : MongoDB
 - Deployed : Heroku
 
-## Installation and start
-1. 레포지토리의 소스코드를 내려 받는다.
+## Installation and start producton mode
+1. 레포지토리의 소스코드 pull
 2. npm i
-3. npm start
+3. .env에서 DB_USER(MongoDB user 입력), DB_PASSWORD(MongoDB password 입력), SECRET_KEY, NODE_ENV(production 입력) 설정
+4. npm start
+5. localhost:4000에서 확인
+
+## Start development mode
+1. 1. 레포지토리의 소스코드 pull
+2. npm i
+3. .env에서 DB_USER(MongoDB user 입력), DB_PASSWORD(MongoDB password 입력), SECRET_KEY, NODE_ENV(dev 입력) 설정
+4. npm run dev
+5. localhost:4000/graphql에서 playground 확인
+6. cd client
+7. npm start
+8. localhost:3000에서 client 확인
 
 ## Reference
 - [Apollo Graphql의 공식 문서](https://www.apollographql.com)
