@@ -22,7 +22,5 @@ Event를 생성하고 Event 참석을 예약 및 취소하는 애플리케이션
 
 ## Reference
 - [Apollo Graphql의 공식 문서](https://www.apollographql.com)
-Graphql의 공식 문서
-https://graphql.org/
-Academind 채널의 Graphql 강좌
-https://www.youtube.com/channel/UCSJbGtTlrDami-tDGPUV9-w
+- [Graphql의 공식 문서](https://graphql.org)
+- [Academind 채널의 Graphql 강좌](https://www.youtube.com/channel/UCSJbGtTlrDami-tDGPUV9-w)
