@@ -10,8 +10,8 @@ Event를 생성하고 Event 참석을 예약 및 취소하는 애플리케이션
 - 이벤트 예약 취소
 
 ## 사용 기술
-- Front-End : React
-- Back-End : Node Express, Graphql
+- Front-End : React, Apollo Client
+- Back-End : Apollo Server, Express, Graphql
 - Database : MongoDB
 - Deployed : Heroku
 
@@ -21,5 +21,9 @@ Event를 생성하고 Event 참석을 예약 및 취소하는 애플리케이션
 3. npm start
 
 ## Reference
+Apollo Graphql의 공식 문서
+https://www.apollographql.com/
+Graphql의 공식 문서
+https://graphql.org/
 Academind 채널의 Graphql 강좌
 https://www.youtube.com/channel/UCSJbGtTlrDami-tDGPUV9-w
