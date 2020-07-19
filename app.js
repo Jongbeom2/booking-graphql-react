@@ -13,7 +13,7 @@ const app = express();
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  playground: process.env.NODE_ENV?false:true,
+  playground: true,
   context: ({ req }) => {
     const { isAuth, userId } = getAuth(req);
     return { isAuth, userId }
@@ -35,3 +35,4 @@ app.get('*', (req, res, next)=>{
 app.listen({ port: process.env.PORT || 4000 }, () =>
   console.log(`🚀 Server ready ${process.env.PORT || 4000}`)
 );
+// 배포 모드에서는 모든 경로를 다 react로 넘겨버리는데 특정 경로는 graphql 이 받도록 수정해야함

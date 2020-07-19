@@ -9,7 +9,7 @@ import { ApolloProvider } from '@apollo/react-hooks';
 import { setContext } from '@apollo/client/link/context';
 const cache = new InMemoryCache();
 const httpLink = new HttpLink({
-  uri: 'http://localhost:4000/graphql'
+  uri: '/graphql'
 });
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
